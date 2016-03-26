@@ -1,0 +1,37 @@
+<div class="row">
+    <div class="col-lg-12">
+        <span class="lead" id="text"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <a class="btn btn-danger btn-lg btn-block" href="/end">结束答题</a>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function(){
+        var text = $("#text");
+        function queryStatus() {
+            $.ajax({
+                url: "/api/question",
+                success: function(data){
+                    if(typeof data.user == "string"){
+                        var show = "剩余时间：" + data.ttl + "s\t抢答者：" + data.user
+                        text.text(show);
+                    } else if(typeof data.count == "number"){
+                        var show = "剩余时间：" + data.ttl + "s\t已答题人数：" + data.count
+                        text.text(show);
+                    } else{
+                        text.text(text.text() + "已结束");
+                        clearInterval(interval);
+                    }
+                }
+            })
+        }
+
+        var interval = setInterval(queryStatus, 1000);
+    });
+</script>

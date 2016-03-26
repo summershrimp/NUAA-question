@@ -1,0 +1,21 @@
+
+module.exports = {
+  redis: {
+    host: '127.0.0.1',
+    port: 6379,
+    password: ''
+  },
+  session:{
+    secret: "c003404d-9c37-47ca-941f-61763fe6c4d3",
+    resave: false,
+    saveUninitialized: false
+  },
+  captcha: {
+    width: 256,
+    height: 60,
+    offset: 40
+  },
+  origin: {
+    "*":true
+  }
+};
