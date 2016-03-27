@@ -122,7 +122,10 @@ router.get('/new',function(req, res, next){
       data = 0;
     }
     ++data;
-    redis.setex("ques:now", 300 ,JSON.stringify({
+    var ttl = 300;
+    if(req.query.type == "choice")
+      ttl = 30;
+    redis.setex("ques:now", ttl ,JSON.stringify({
       number:data,
       type: req.query.type
     }));
