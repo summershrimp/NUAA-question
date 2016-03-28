@@ -1,6 +1,17 @@
 <div class="row">
     <div class="col-lg-12">
-        <span class="lead" id="text"></span>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th colspan="2" id="text">
+
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="table">
+
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -14,6 +25,7 @@
 <script>
     $(document).ready(function(){
         var text = $("#text");
+        var table = $("#table");
         function queryStatus() {
             $.ajax({
                 url: "/api/question",
@@ -21,8 +33,16 @@
                     if(typeof data.user == "string"){
                         var show = "剩余时间：" + data.ttl + "s\t抢答者：" + data.user
                         text.text(show);
-                    } else if(typeof data.count == "number"){
-                        var show = "剩余时间：" + data.ttl + "s\t已答题人数：" + data.count
+                    } else if(typeof data.count == "object"){
+                        var count = 0;
+                        var html = "<tr>"
+                        for (var i in data.count){
+                            count += data.count[i].count;
+                            html += "<td>"+ data.count[i].answer +"</td><td> "+ data.count[i].count+"</td>"
+                        }
+                        html += "</tr>"
+                        var show = "剩余时间：" + data.ttl + "s\t已答题人数：" + count;
+                        table.html(html);
                         text.text(show);
                     } else{
                         text.text(text.text() + "已结束");

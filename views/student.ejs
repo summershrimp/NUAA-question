@@ -66,10 +66,13 @@
 
                         if(!answered)
                             showQuestion()
-                    } else if(typeof data.count == "number"){
-                        var show = "剩余时间：" + data.ttl + "s\t已答题人数：" + data.count
+                    } else if(typeof data.count == "object"){
+                        var count = 0;
+                        for (var i in data.count) {
+                            count += data.count[i].count;
+                        }
+                        var show = "剩余时间：" + data.ttl + "s\t已答题人数：" + count
                         message.text(show);
-
                         if(!answered)
                             showChoice()
                     } else{

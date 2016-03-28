@@ -37,8 +37,8 @@ router.get("/question", function(req, res, next){
                     res.send({ttl: ttl, user: user || ""});
                 })
             }else if(data.type == "choice"){
-                pool.query("select count(*) count from logs where number = ? and date = ?",[data.number, date],function(err, rows){
-                    res.send({ttl: ttl, count: rows[0].count});
+                pool.query("select count(*) count, answer from logs where number = ? and date = ? GROUP BY answer Order by answer asc",[data.number, date],function(err, rows){
+                    res.send({ttl: ttl, count: rows});
                 });
             }
         });
@@ -68,12 +68,6 @@ router.post("/answer", function(req, res, next){
         if(data.type == "question"){
             redis.setnx("ques:" + date +":" + data.number, req.session.user.realname, function(err, ret){
                 if(ret){
-                    console.log(JSON.stringify({
-                        user_id: req.session.user.id,
-                        type: data.type,
-                        date: date,
-                        number: data.number
-                    }));
                     pool.query("insert into logs set ?",{
                         user_id: req.session.user.id,
                         type: data.type,
