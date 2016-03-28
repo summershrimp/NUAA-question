@@ -35,12 +35,11 @@
                         text.text(show);
                     } else if(typeof data.count == "object"){
                         var count = 0;
-                        var html = "<tr>"
+                        var html = ""
                         for (var i in data.count){
                             count += data.count[i].count;
-                            html += "<td>"+ data.count[i].answer +"</td><td> "+ data.count[i].count+"</td>"
+                            html += "<tr><td>"+ data.count[i].answer +"</td><td> "+ data.count[i].count+"</td></tr>"
                         }
-                        html += "</tr>"
                         var show = "剩余时间：" + data.ttl + "s\t已答题人数：" + count;
                         table.html(html);
                         text.text(show);
