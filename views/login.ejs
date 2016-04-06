@@ -1,17 +1,131 @@
 <div class="row">
     <div class="col-xs-12" style="margin-top: 40px">
-        <form class= "form-horizontal" method="post" action="login" >
+        <form class="form-horizontal login-form" method="post" action="login" >
             <div class="form-group" >
                 <label for="username">用户名</label>
                 <input class="form-control" name="username">
             </div>
             <div class="form-group <% if (typeof empty != 'undefined') {%> has-error <%}%>">
                 <label for="username">密码</label>
-                <input class="form-control" type="password", name="password">
+                <input class="form-control" type="password" name="password">
             </div>
             <div class="form-group">
-                <button class="form-control">登陆</button>
+                <button class="form-control" >登陆</button>
             </div>
+            <input name="location" hidden="hidden">
         </form>
+        <div class="form-control">
+            <div class="form-group">
+                <label class="pos-dist"></label>
+            </div>
+        </div>
     </div>
 </div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var informationModal = $("#myModal");
+    var form = $('form.login-form');
+    var locationForm = form.find('input[name=location]');
+    var posText = $('.pos-dist');
+    var building2Location = {
+        lat:31.939905,
+        long:118.784472
+    }
+    function locationSuccess(position){
+        var coords = position.coords;
+        var pos = {};
+        pos.latitude = coords.latitude;
+        pos.longitude = coords.longitude;
+        pos.accuracy = coords.accuracy;
+        var can = false
+        var dist = calcDistance(pos.latitude, pos.longitude);
+        posText.text("当前距离约"+Math.floor(dist)+"米 精度"+pos.accuracy+"米");
+        pos.distance = dist;
+        if(Math.abs(dist - pos.accuracy) < 100)
+            can = true;
+        if(can) {
+            form.find('button[type=submit]').attr("disabled", false);
+            hideModal();
+        }
+        else {
+            form.find('button[type=submit]').attr("disabled", true);
+            showModal("错误", "距离二号楼大约"+Math.floor(dist)+"米，快去上课！");
+        }
+        locationForm.val(JSON.stringify(pos));
+    }
+    function calcDistance(lat, long){
+        var dist_long = 102834.74258026089786013677476285;
+        var dist_lat = 111712.69150641055729984301412873;
+        var x = Math.abs(building2Location.lat - lat) * dist_lat;
+        var y = Math.abs(building2Location.long - long) * dist_long;
+        return Math.sqrt(x*x + y*y);
+
+    }
+
+    function showModal(title, body){
+        informationModal.find('.modal-title').text(title);
+        informationModal.find('.modal-body').html(body);
+        informationModal.modal('show');
+    }
+
+    function hideModal(){
+        informationModal.modal('hide');
+    }
+    function locationError(error){
+        // PERMISSION_DENIED = 1;
+        // POSITION_UNAVAILABLE = 2;
+        // TIMEOUT = 3;
+        switch(error.code){
+            case 1: showPermissionError(error.message); break;
+            case 2: showUnavailableError(error.message); break;
+            case 3: showTimeoutError(error.message); break;
+        }
+    }
+
+    function showPermissionError(msg){
+        showModal("错误", "请允许获取位置<br>" + msg);
+    }
+    function showUnavailableError(msg){
+        showModal("错误", "无法获取位置<br>" + msg);
+        form.find('button[type=submit]').attr("disabled", false);
+    }
+    function showTimeoutError(msg){
+        showModal("错误", "获取位置超时，重试中<br>"+msg);
+        form.find('button[type=submit]').attr("disabled", false);
+        getLocation();
+    }
+    function getLocation(){
+        navigator.geolocation.watchPosition(locationSuccess, locationError,{
+            // 指示浏览器获取高精度的位置，默认为false
+            enableHighAccuracy: true,
+            // 指定获取地理位置的超时时间，默认不限时，单位为毫秒
+            timeout: 60000,
+            // 最长有效期，在重复获取地理位置时，此参数指定多久再次获取位置。
+            maximumAge: 3000
+        });
+    }
+    if (navigator.geolocation) {
+        showModal("获取位置" ,"正在获取位置信息，请稍后。");
+        setTimeout(getLocation,1000);
+    }else{
+        showModal("错误","你的浏览器不支持定位。登陆位置将不会被记录");
+    }
+</script>
