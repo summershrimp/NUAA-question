@@ -10,7 +10,7 @@
                 <input class="form-control" type="password" name="password">
             </div>
             <div class="form-group">
-                <button class="form-control" >登陆</button>
+                <button class="form-control" type="submit" disabled="disabled">登陆</button>
             </div>
             <input name="location" hidden="hidden">
         </form>
@@ -102,6 +102,7 @@
 
     function showPermissionError(msg){
         showModal("错误", "请允许获取位置<br>" + msg);
+        navigator.geolocation.clearWatch();
     }
     function showUnavailableError(msg){
         showModal("错误", "无法获取位置<br>" + msg);
@@ -117,14 +118,14 @@
             // 指示浏览器获取高精度的位置，默认为false
             enableHighAccuracy: true,
             // 指定获取地理位置的超时时间，默认不限时，单位为毫秒
-            timeout: 60000,
+            timeout: 5000,
             // 最长有效期，在重复获取地理位置时，此参数指定多久再次获取位置。
             maximumAge: 3000
         });
     }
     if (navigator.geolocation) {
         showModal("获取位置" ,"正在获取位置信息，请稍后。");
-        setTimeout(getLocation,1000);
+        setTimeout(getLocation, 1000);
     }else{
         showModal("错误","你的浏览器不支持定位。登陆位置将不会被记录");
     }
