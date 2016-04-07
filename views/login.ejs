@@ -59,7 +59,7 @@
         var dist = calcDistance(pos.latitude, pos.longitude);
         posText.text("当前距离约"+Math.floor(dist)+"米 精度"+pos.accuracy+"米");
         pos.distance = dist;
-        if(Math.abs(dist - pos.accuracy) < 100)
+        if(dist < 100 + pos.accuracy)
             can = true;
         if(can) {
             form.find('button[type=submit]').attr("disabled", false);
