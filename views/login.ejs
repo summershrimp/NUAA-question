@@ -62,13 +62,16 @@
         if(dist < 100 + pos.accuracy)
             can = true;
         if(can) {
-            form.find('button[type=submit]').attr("disabled", false);
-            hideModal();
+            posText.text(posText.text() + " 已进入范围")
+            //form.find('button[type=submit]').attr("disabled", false);
         }
         else {
-            form.find('button[type=submit]').attr("disabled", true);
-            showModal("错误", "距离二号楼大约"+Math.floor(dist)+"米，快去上课！");
+            posText.text(posText.text() + " 距离过远")
+            //form.find('button[type=submit]').attr("disabled", true);
+            //showModal("错误", "距离二号楼大约"+Math.floor(dist)+"米，快去上课！");
         }
+        hideModal();
+        form.find('button[type=submit]').attr("disabled", false);
         locationForm.val(JSON.stringify(pos));
     }
     function calcDistance(lat, long){
@@ -103,6 +106,7 @@
     function showPermissionError(msg){
         showModal("错误", "请允许获取位置<br>" + msg);
         navigator.geolocation.clearWatch();
+        form.find('button[type=submit]').attr("disabled", true);
     }
     function showUnavailableError(msg){
         showModal("错误", "无法获取位置<br>" + msg);
